@@ -46,8 +46,22 @@ class TrajectoryDiffusion(torch.nn.Module):   #DiffusionSampler
         return x0
 
     def generation_training(self, x: torch.Tensor,noise: Optional[torch.Tensor] = None):
-        #The code will be released soon
-        return 'discrete_loss'
+        batch_size = x.shape[0]
+        t = torch.randint(low=0, high=self.full_n_steps, size=(batch_size,), device=self.model.get_device,dtype=torch.long)  # need to revise when
+        locs_embed=self.model.LocationEncoder(locs=x,lab=self.lab,maxi=self.maxi)
+        x0 = self.model.TrajEncoder(sequence=locs_embed)
+
+        if noise is None:
+            noise = torch.randn_like(x0)
+        xt = self.diffusion_process(x0, t, noise)
+
+        uncertainty = self.get_uncertainty(xt, t)
+
+        predict_x0 = self.pred_x0(e_t=uncertainty,index=t,x=xt)
+        current_predict_x0 = self.model.TrajDecoder(predict_x0)
+
+        discrete_loss = torch.nn.functional.cross_entropy(current_predict_x0.view(-1, self.model.num_location),x.view(-1, ), label_smoothing=0.0,reduction='sum')  # *256 this leads to view
+        return discrete_loss
 
     @torch.no_grad()
     def sampler(self,x,shape):
