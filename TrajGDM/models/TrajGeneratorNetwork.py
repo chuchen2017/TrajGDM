@@ -101,13 +101,17 @@ class TrajGeneratorNetwork(torch.nn.Module):
         return sequence
 
     def LocationEncoder(self,locs,lab,maxi):
-        west=self.location_embed(locs + maxi)
-        east=self.location_embed(locs + 2 + maxi)
-        north=self.location_embed(locs + 1)
-        south = self.location_embed(locs + 1 + (2*maxi))
-        center=self.location_embed(locs + 1 + maxi)
-        sequence = self.spatial_embed(torch.cat((center*lab,south,north,east,west),dim=-1))
-        return sequence
+        if maxi == 110 or maxi == 27:
+            west = self.location_embed(locs + maxi)
+            east = self.location_embed(locs + 2 + maxi)
+            north = self.location_embed(locs + 1)
+            south = self.location_embed(locs + 1 + (2 * maxi))
+            center = self.location_embed(locs + 1 + maxi)
+            sequence = self.spatial_embed(torch.cat((center * lab, south, north, east, west), dim=-1))
+            return sequence
+        else:
+            sequence = self.location_embed(locs)
+            return sequence
 
     def generate_square_subsequent_mask(self, sz):
         mask = (torch.triu(torch.ones(sz, sz)) == 1).transpose(0, 1)
