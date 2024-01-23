@@ -1,6 +1,6 @@
-# Simulating human mobility with a generative trajectory generation model
+# Simulating human mobility with a trajectory generation framework based on diffusion model
 
-This is the official Codebase for Simulating Human Mobility with a Generative Trajectory Generation Model.
+This is the official Codebase for Simulating human mobility with a trajectory generation framework based on diffusion model.
 
 # Highlights 
 We proposed a novel human mobility modeling method named TrajGDM. The method models trajectory generation as a process the uncertainty in the trajectory is gradually removed. A trajectory generator is proposed to predict the uncertainty in a trajectory. Moreover, we defined a trajectory diffusion process and a trajectory generation process to train the trajectory generator and generate a realistic dataset with that. 
@@ -26,9 +26,17 @@ We provide coded and cleaned trajectories of two datasets in the datasets file. 
 # Running the experiments
 Run runner/trainer.py to train a TrajGDM for T-Drive dataset. 
 Run runner/trainer_geolife.py to train a TrajGDM for Geo-Life dataset.
-(At the current stage, this part of the code is not included in the current hub, we will release the code as soon as our work is published.)
 
 Run runner/generation_eval.py to generate a synthesized trajectory dataset and evaluate its similarity with the real one using 5 metrics from the paper.
 
 Run runner/zeroshot_eval.py to predict and reconstruct a trajectory with a trained TrajGDM model.
+
+# Note
+Variable maxi indicates the number of grid columns in a region. If you perfer not to use location encoding function in this paper, just set maxi as any other random value, a regular embedding function would replace it.
+
+# Requirements
+```
+torch==2.0.1
+scipy==1.7.3
+```
 
